@@ -6,6 +6,7 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.EditText
+import androidx.appcompat.app.AppCompatActivity
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.activityViewModels
 import androidx.navigation.fragment.findNavController
@@ -25,6 +26,11 @@ class HomeFragment : Fragment() {
         return binding.root
     }
 
+    override fun onResume() {
+        super.onResume()
+        (requireActivity() as AppCompatActivity).supportActionBar?.hide()
+    }
+
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         val adapter = NoteAdapter { noteId ->
             findNavController().navigate(HomeFragmentDirections.actionHomeToChecklist(noteId))
@@ -39,7 +45,10 @@ class HomeFragment : Fragment() {
             }
         }).attachToRecyclerView(binding.recyclerView)
 
-        vm.allNotesWithItems.observe(viewLifecycleOwner) { adapter.submitList(it) }
+        vm.allNotesWithItems.observe(viewLifecycleOwner) { list ->
+            adapter.submitList(list)
+            binding.emptyState.visibility = if (list.isNullOrEmpty()) View.VISIBLE else View.GONE
+        }
 
         binding.fab.setOnClickListener { showCreateDialog() }
     }

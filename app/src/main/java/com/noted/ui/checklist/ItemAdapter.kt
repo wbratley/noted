@@ -1,5 +1,6 @@
 package com.noted.ui.checklist
 
+import android.graphics.Paint
 import android.view.LayoutInflater
 import android.view.ViewGroup
 import androidx.recyclerview.widget.DiffUtil
@@ -19,6 +20,14 @@ class ItemAdapter(
             binding.checkbox.setOnCheckedChangeListener(null)
             binding.checkbox.isChecked = item.ticked
             binding.itemText.setText(item.text)
+
+            if (item.ticked) {
+                binding.itemText.alpha = 0.35f
+                binding.itemText.paintFlags = binding.itemText.paintFlags or Paint.STRIKE_THRU_TEXT_FLAG
+            } else {
+                binding.itemText.alpha = 1f
+                binding.itemText.paintFlags = binding.itemText.paintFlags and Paint.STRIKE_THRU_TEXT_FLAG.inv()
+            }
 
             binding.checkbox.setOnCheckedChangeListener { _, _ -> onTick(item) }
             binding.deleteButton.setOnClickListener { onDelete(item) }
