@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="app_name">Noted</string>
+    <string name="new_list">New list</string>
+    <string name="new_item">New item</string>
+    <string name="add">Add</string>
+    <string name="delete_item">Delete item</string>
+    <string name="rename">Rename</string>
+</resources>
