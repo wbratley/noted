@@ -13,8 +13,8 @@ android {
         applicationId = "com.noted"
         minSdk = 26
         targetSdk = 34
-        versionCode = 1
-        versionName = "1.0"
+        versionCode = (System.getenv("BUILD_NUMBER")?.toIntOrNull()) ?: 1
+        versionName = "1.${System.getenv("BUILD_NUMBER") ?: "0"}"
     }
 
     buildTypes {
