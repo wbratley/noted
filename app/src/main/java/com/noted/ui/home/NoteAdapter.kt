@@ -7,6 +7,9 @@ import androidx.recyclerview.widget.ListAdapter
 import androidx.recyclerview.widget.RecyclerView
 import com.noted.data.NoteWithItems
 import com.noted.databinding.ItemNoteBinding
+import java.text.SimpleDateFormat
+import java.util.Date
+import java.util.Locale
 
 class NoteAdapter(private val onClick: (Long) -> Unit) :
     ListAdapter<NoteWithItems, NoteAdapter.ViewHolder>(DIFF) {
@@ -17,11 +20,23 @@ class NoteAdapter(private val onClick: (Long) -> Unit) :
             val total = item.items.size
             val ticked = item.items.count { it.ticked }
             binding.noteCount.text = when {
-                total == 0 -> "empty"
-                ticked == total -> "done ✓"
+                total == 0 -> ""
+                ticked == total -> "all done"
                 else -> "$ticked / $total"
             }
+            binding.noteDate.text = formatAge(item.note.createdAt)
             binding.root.setOnClickListener { onClick(item.note.id) }
+        }
+    }
+
+    private fun formatAge(ts: Long): String {
+        val diff = System.currentTimeMillis() - ts
+        return when {
+            diff < 60_000L -> "just now"
+            diff < 3_600_000L -> "${diff / 60_000}m ago"
+            diff < 86_400_000L -> "${diff / 3_600_000}h ago"
+            diff < 172_800_000L -> "yesterday"
+            else -> SimpleDateFormat("d MMM", Locale.getDefault()).format(Date(ts))
         }
     }
 

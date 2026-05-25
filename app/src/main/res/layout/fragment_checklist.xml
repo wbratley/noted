@@ -3,7 +3,30 @@
     xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:orientation="vertical">
+    android:orientation="vertical"
+    android:background="@color/black_bg">
+
+    <EditText
+        android:id="@+id/note_title"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:background="@null"
+        android:hint="List name"
+        android:textColorHint="@color/text_dim"
+        android:imeOptions="actionDone"
+        android:inputType="textCapSentences"
+        android:maxLines="1"
+        android:padding="20dp"
+        android:textColor="@color/white"
+        android:textSize="24sp"
+        android:textStyle="bold" />
+
+    <View
+        android:layout_width="match_parent"
+        android:layout_height="1dp"
+        android:layout_marginStart="16dp"
+        android:layout_marginEnd="16dp"
+        android:background="#14FFFFFF" />
 
     <androidx.recyclerview.widget.RecyclerView
         android:id="@+id/recycler_view"
@@ -11,32 +34,28 @@
         android:layout_height="0dp"
         android:layout_weight="1" />
 
-    <LinearLayout
+    <View
+        android:layout_width="match_parent"
+        android:layout_height="1dp"
+        android:layout_marginStart="16dp"
+        android:layout_marginEnd="16dp"
+        android:background="#14FFFFFF" />
+
+    <EditText
+        android:id="@+id/add_item_input"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:orientation="horizontal"
-        android:padding="8dp"
-        android:elevation="4dp"
-        android:background="?attr/colorSurface">
-
-        <EditText
-            android:id="@+id/add_item_input"
-            android:layout_width="0dp"
-            android:layout_height="wrap_content"
-            android:layout_weight="1"
-            android:hint="@string/new_item"
-            android:imeOptions="actionDone"
-            android:inputType="text"
-            android:maxLines="1" />
-
-        <Button
-            android:id="@+id/add_item_button"
-            style="@style/Widget.MaterialComponents.Button.TextButton"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_marginStart="4dp"
-            android:text="@string/add" />
-
-    </LinearLayout>
+        android:background="@null"
+        android:hint="@string/new_item"
+        android:textColorHint="@color/text_dim"
+        android:imeOptions="actionDone"
+        android:inputType="textCapSentences"
+        android:maxLines="1"
+        android:paddingStart="56dp"
+        android:paddingEnd="16dp"
+        android:paddingTop="14dp"
+        android:paddingBottom="14dp"
+        android:textColor="@color/electric_blue_light"
+        android:textSize="18sp" />
 
 </LinearLayout>

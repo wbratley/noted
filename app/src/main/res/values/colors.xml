@@ -1,10 +1,10 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <color name="electric_blue">#FF0070F0</color>
-    <color name="electric_blue_light">#FF55AAFF</color>
-    <color name="electric_blue_dark">#FF004DBF</color>
+    <color name="electric_blue">#FF00C8FF</color>
+    <color name="electric_blue_light">#FF33D4FF</color>
+    <color name="electric_blue_dark">#FF0090BB</color>
     <color name="black_bg">#FF080808</color>
     <color name="surface_dark">#FF141414</color>
     <color name="white">#FFFFFFFF</color>
-    <color name="text_dim">#FF3C3C3C</color>
+    <color name="text_dim">#FF2E2E2E</color>
 </resources>

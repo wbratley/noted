@@ -22,6 +22,8 @@ class NoteViewModel(app: Application) : AndroidViewModel(app) {
 
     fun createNote(name: String) = viewModelScope.launch { repo.createNote(name) }
 
+    suspend fun createAndGetNoteId(name: String): Long = repo.createNote(name)
+
     fun renameNote(note: Note, newName: String) = viewModelScope.launch {
         repo.updateNote(note.copy(name = newName))
     }

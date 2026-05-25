@@ -1,20 +1,20 @@
 package com.noted.ui.home
 
-import android.app.AlertDialog
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import android.widget.EditText
 import androidx.appcompat.app.AppCompatActivity
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.activityViewModels
+import androidx.lifecycle.lifecycleScope
 import androidx.navigation.fragment.findNavController
 import androidx.recyclerview.widget.ItemTouchHelper
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.noted.databinding.FragmentHomeBinding
 import com.noted.viewmodel.NoteViewModel
+import kotlinx.coroutines.launch
 
 class HomeFragment : Fragment() {
     private var _binding: FragmentHomeBinding? = null
@@ -50,23 +50,12 @@ class HomeFragment : Fragment() {
             binding.emptyState.visibility = if (list.isNullOrEmpty()) View.VISIBLE else View.GONE
         }
 
-        binding.fab.setOnClickListener { showCreateDialog() }
-    }
-
-    private fun showCreateDialog() {
-        val input = EditText(requireContext()).apply {
-            hint = "List name"
-            setPadding(48, 16, 48, 16)
-        }
-        AlertDialog.Builder(requireContext())
-            .setTitle("New list")
-            .setView(input)
-            .setPositiveButton("Create") { _, _ ->
-                val name = input.text.toString().trim()
-                if (name.isNotEmpty()) vm.createNote(name)
+        binding.fab.setOnClickListener {
+            viewLifecycleOwner.lifecycleScope.launch {
+                val noteId = vm.createAndGetNoteId("New list")
+                findNavController().navigate(HomeFragmentDirections.actionHomeToChecklist(noteId))
             }
-            .setNegativeButton("Cancel", null)
-            .show()
+        }
     }
 
     override fun onDestroyView() {
