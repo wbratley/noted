@@ -6,5 +6,6 @@
     <color name="black_bg">#FF080808</color>
     <color name="surface_dark">#FF141414</color>
     <color name="white">#FFFFFFFF</color>
+    <color name="title_blue">#FFA8DAFF</color>
     <color name="text_dim">#FF2E2E2E</color>
 </resources>
