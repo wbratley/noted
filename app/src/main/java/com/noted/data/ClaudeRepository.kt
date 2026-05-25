@@ -72,13 +72,25 @@ class ClaudeRepository(private val context: Context) {
             throw Exception("API error $responseCode: $err")
         }
 
-        val raw = JSONObject(responseText)
+        val rawText = JSONObject(responseText)
             .getJSONArray("content")
             .getJSONObject(0)
             .getString("text")
             .trim()
 
-        val arr = JSONArray(raw)
+        // Strip markdown fences Claude sometimes adds despite the prompt
+        val stripped = rawText
+            .removePrefix("```json").removePrefix("```")
+            .trimStart()
+            .let { s -> if (s.endsWith("```")) s.dropLast(3).trimEnd() else s }
+
+        // Find the outermost [...] in case there's any surrounding prose
+        val start = stripped.indexOf('[')
+        val end = stripped.lastIndexOf(']')
+        val jsonText = if (start != -1 && end > start) stripped.substring(start, end + 1)
+                       else throw Exception("Unexpected response: $stripped")
+
+        val arr = JSONArray(jsonText)
         (0 until arr.length()).map { arr.getString(it) }.filter { it.isNotBlank() }
     }
 }
