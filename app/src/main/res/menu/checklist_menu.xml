@@ -3,7 +3,15 @@
     xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto">
     <item
+        android:id="@+id/action_ai_paste"
+        android:title="AI from clipboard"
+        app:showAsAction="never" />
+    <item
         android:id="@+id/action_rename"
         android:title="@string/rename"
+        app:showAsAction="never" />
+    <item
+        android:id="@+id/action_settings"
+        android:title="Settings"
         app:showAsAction="never" />
 </menu>

@@ -7,4 +7,9 @@
     <string name="delete_item">Delete item</string>
     <string name="rename">Rename</string>
     <string name="empty_hint">Add a new list</string>
+    <string name="ai_paste">AI from clipboard</string>
+    <string name="settings">Settings</string>
+    <string name="api_key_label">Anthropic API key</string>
+    <string name="no_clipboard">Nothing useful in clipboard</string>
+    <string name="no_api_key">No API key — add one in Settings</string>
 </resources>

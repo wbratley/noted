@@ -1,0 +1,55 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical"
+    android:background="@color/black_bg"
+    android:padding="24dp">
+
+    <com.google.android.material.switchmaterial.SwitchMaterial
+        android:id="@+id/claude_enabled_switch"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="Enable Claude AI"
+        android:textColor="@color/title_blue"
+        android:textSize="16sp"
+        android:layout_marginBottom="28dp" />
+
+    <TextView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="Anthropic API key"
+        android:textColor="@color/title_blue"
+        android:textSize="13sp"
+        android:letterSpacing="0.06"
+        android:layout_marginBottom="8dp" />
+
+    <EditText
+        android:id="@+id/api_key_input"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:background="@null"
+        android:textColor="@color/electric_blue_light"
+        android:textColorHint="@color/text_dim"
+        android:hint="sk-ant-..."
+        android:inputType="textVisiblePassword"
+        android:textSize="16sp"
+        android:paddingBottom="12dp"
+        android:fontFamily="monospace" />
+
+    <View
+        android:layout_width="match_parent"
+        android:layout_height="1dp"
+        android:background="#14FFFFFF"
+        android:layout_marginBottom="28dp" />
+
+    <Button
+        android:id="@+id/save_button"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Save"
+        android:textColor="@color/black_bg"
+        android:backgroundTint="@color/electric_blue" />
+
+</LinearLayout>

@@ -1,14 +1,19 @@
 package com.noted
 
+import android.content.Intent
 import android.os.Bundle
+import androidx.activity.viewModels
 import androidx.appcompat.app.AppCompatActivity
 import androidx.appcompat.app.AppCompatDelegate
 import androidx.navigation.fragment.NavHostFragment
 import androidx.navigation.ui.setupActionBarWithNavController
 import com.noted.databinding.ActivityMainBinding
+import com.noted.viewmodel.NoteViewModel
+import com.noted.viewmodel.PendingShare
 
 class MainActivity : AppCompatActivity() {
     private lateinit var binding: ActivityMainBinding
+    private val vm: NoteViewModel by viewModels()
 
     override fun onCreate(savedInstanceState: Bundle?) {
         AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_YES)
@@ -18,6 +23,23 @@ class MainActivity : AppCompatActivity() {
         setSupportActionBar(binding.toolbar)
         val navHost = supportFragmentManager.findFragmentById(R.id.nav_host_fragment) as NavHostFragment
         setupActionBarWithNavController(navHost.navController)
+        handleShareIntent(intent)
+    }
+
+    override fun onNewIntent(intent: Intent) {
+        super.onNewIntent(intent)
+        handleShareIntent(intent)
+    }
+
+    private fun handleShareIntent(intent: Intent) {
+        if (intent.action != Intent.ACTION_SEND) return
+
+        val text = intent.getStringExtra(Intent.EXTRA_TEXT)
+        val imageUri = intent.getParcelableExtra<android.net.Uri>(Intent.EXTRA_STREAM)
+
+        if (text != null || imageUri != null) {
+            vm.pendingShare.value = PendingShare(text, imageUri)
+        }
     }
 
     override fun onSupportNavigateUp(): Boolean {

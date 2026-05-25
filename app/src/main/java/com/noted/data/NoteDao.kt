@@ -25,6 +25,9 @@ interface NoteDao {
     @Insert
     suspend fun insertItem(item: Item): Long
 
+    @Insert
+    suspend fun insertItems(items: List<Item>)
+
     @Update
     suspend fun updateItem(item: Item)
 

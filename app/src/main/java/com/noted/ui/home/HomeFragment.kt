@@ -50,6 +50,18 @@ class HomeFragment : Fragment() {
             binding.emptyState.visibility = if (list.isNullOrEmpty()) View.VISIBLE else View.GONE
         }
 
+        vm.pendingShare.observe(viewLifecycleOwner) { share ->
+            if (share == null) return@observe
+            vm.pendingShare.value = null
+
+            viewLifecycleOwner.lifecycleScope.launch {
+                val noteId = vm.createAndGetNoteId("New list")
+                findNavController().navigate(HomeFragmentDirections.actionHomeToChecklist(noteId))
+                // Import runs in viewModelScope — survives fragment navigation
+                vm.importFromContent(noteId, share.text, share.imageUri)
+            }
+        }
+
         binding.fab.setOnClickListener {
             viewLifecycleOwner.lifecycleScope.launch {
                 val noteId = vm.createAndGetNoteId("New list")

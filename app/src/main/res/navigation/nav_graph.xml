@@ -12,6 +12,9 @@
         <action
             android:id="@+id/action_home_to_checklist"
             app:destination="@id/checklistFragment" />
+        <action
+            android:id="@+id/action_home_to_settings"
+            app:destination="@id/settingsFragment" />
     </fragment>
 
     <fragment
@@ -21,6 +24,14 @@
         <argument
             android:name="noteId"
             app:argType="long" />
+        <action
+            android:id="@+id/action_checklist_to_settings"
+            app:destination="@id/settingsFragment" />
     </fragment>
+
+    <fragment
+        android:id="@+id/settingsFragment"
+        android:name="com.noted.ui.settings.SettingsFragment"
+        android:label="Settings" />
 
 </navigation>
