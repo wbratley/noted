@@ -23,4 +23,6 @@ class NoteRepository(private val dao: NoteDao) {
     suspend fun updateItemText(item: Item, text: String) = dao.updateItem(item.copy(text = text))
 
     suspend fun deleteItem(item: Item) = dao.deleteItem(item)
+
+    suspend fun deleteTickedItems(noteId: Long) = dao.deleteTickedItems(noteId)
 }

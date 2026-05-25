@@ -52,7 +52,7 @@ class ChecklistFragment : Fragment() {
             if (!binding.noteTitle.isFocused) {
                 binding.noteTitle.setText(nwi.note.name)
             }
-            adapter.submitList(nwi.items.sortedBy { it.id })
+            adapter.submitList(nwi.items.sortedWith(compareBy({ it.ticked }, { it.id })))
         }
 
         vm.importState.observe(viewLifecycleOwner) { state ->
@@ -114,13 +114,23 @@ class ChecklistFragment : Fragment() {
     override fun onOptionsItemSelected(item: MenuItem): Boolean {
         return when (item.itemId) {
             R.id.action_ai_paste -> { triggerAiPaste(); true }
-            R.id.action_rename -> { binding.noteTitle.requestFocus(); true }
+            R.id.action_delete_ticked -> { deleteTicked(); true }
             R.id.action_settings -> {
                 findNavController().navigate(ChecklistFragmentDirections.actionChecklistToSettings())
                 true
             }
             else -> super.onOptionsItemSelected(item)
         }
+    }
+
+    private fun deleteTicked() {
+        val ticked = vm.getNoteWithItems(args.noteId).value?.items?.count { it.ticked } ?: 0
+        if (ticked == 0) {
+            Snackbar.make(binding.root, "No checked items", Snackbar.LENGTH_SHORT).show()
+            return
+        }
+        vm.deleteTickedItems(args.noteId)
+        Snackbar.make(binding.root, "Cleared $ticked item${if (ticked == 1) "" else "s"}", Snackbar.LENGTH_SHORT).show()
     }
 
     private fun triggerAiPaste() {

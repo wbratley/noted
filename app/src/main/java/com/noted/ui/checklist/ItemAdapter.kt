@@ -22,7 +22,7 @@ class ItemAdapter(
             binding.itemText.setText(item.text)
 
             if (item.ticked) {
-                binding.itemText.alpha = 0.35f
+                binding.itemText.alpha = 0.5f
                 binding.itemText.paintFlags = binding.itemText.paintFlags or Paint.STRIKE_THRU_TEXT_FLAG
             } else {
                 binding.itemText.alpha = 1f

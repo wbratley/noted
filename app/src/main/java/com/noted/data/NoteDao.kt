@@ -33,4 +33,7 @@ interface NoteDao {
 
     @Delete
     suspend fun deleteItem(item: Item)
+
+    @Query("DELETE FROM items WHERE noteId = :noteId AND ticked = 1")
+    suspend fun deleteTickedItems(noteId: Long)
 }

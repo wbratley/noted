@@ -48,6 +48,8 @@ class NoteViewModel(app: Application) : AndroidViewModel(app) {
 
     fun deleteNote(note: Note) = viewModelScope.launch { repo.deleteNote(note) }
 
+    fun deleteTickedItems(noteId: Long) = viewModelScope.launch { repo.deleteTickedItems(noteId) }
+
     fun addItem(noteId: Long, text: String) = viewModelScope.launch { repo.addItem(noteId, text) }
 
     fun addItems(noteId: Long, texts: List<String>) = viewModelScope.launch { repo.addItems(noteId, texts) }
