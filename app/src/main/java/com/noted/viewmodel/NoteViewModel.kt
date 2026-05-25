@@ -2,20 +2,23 @@ package com.noted.viewmodel
 
 import android.app.Application
 import androidx.lifecycle.AndroidViewModel
-import androidx.lifecycle.asLiveData
+import androidx.lifecycle.LiveData
 import androidx.lifecycle.viewModelScope
 import com.noted.data.Item
 import com.noted.data.Note
 import com.noted.data.NoteDatabase
 import com.noted.data.NoteRepository
+import com.noted.data.NoteWithItems
 import kotlinx.coroutines.launch
 
 class NoteViewModel(app: Application) : AndroidViewModel(app) {
     private val repo = NoteRepository(NoteDatabase.getDatabase(app).noteDao())
 
-    val allNotesWithItems = repo.allNotesWithItems.asLiveData()
+    val allNotesWithItems: LiveData<List<NoteWithItems>> = repo.allNotesWithItems
 
-    fun getNoteWithItems(id: Long) = repo.getNoteWithItems(id).asLiveData()
+    private val noteCache = mutableMapOf<Long, LiveData<NoteWithItems>>()
+    fun getNoteWithItems(id: Long): LiveData<NoteWithItems> =
+        noteCache.getOrPut(id) { repo.getNoteWithItems(id) }
 
     fun createNote(name: String) = viewModelScope.launch { repo.createNote(name) }
 

@@ -1,11 +1,11 @@
 package com.noted.data
 
-import kotlinx.coroutines.flow.Flow
+import androidx.lifecycle.LiveData
 
 class NoteRepository(private val dao: NoteDao) {
-    val allNotesWithItems: Flow<List<NoteWithItems>> = dao.getAllNotesWithItems()
+    val allNotesWithItems: LiveData<List<NoteWithItems>> = dao.getAllNotesWithItems()
 
-    fun getNoteWithItems(id: Long): Flow<NoteWithItems> = dao.getNoteWithItems(id)
+    fun getNoteWithItems(id: Long): LiveData<NoteWithItems> = dao.getNoteWithItems(id)
 
     suspend fun createNote(name: String): Long = dao.insertNote(Note(name = name))
 
