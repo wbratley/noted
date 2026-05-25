@@ -22,7 +22,7 @@ import com.noted.viewmodel.NoteViewModel
 class ChecklistFragment : Fragment() {
     private var _binding: FragmentChecklistBinding? = null
     private val binding get() = _binding!!
-    private val vm: NoteViewModel by activityViewModels()
+    private val vm: NoteViewModel by activityViewModels { NoteViewModel.factory(requireActivity().application) }
     private val args: ChecklistFragmentArgs by navArgs()
     private var aiPasteItem: MenuItem? = null
 
@@ -61,13 +61,13 @@ class ChecklistFragment : Fragment() {
                 is ImportState.Success -> {
                     aiPasteItem?.isEnabled = true
                     Snackbar.make(binding.root, "Added ${state.count} items", Snackbar.LENGTH_SHORT).show()
-                    vm.importState.value = ImportState.Idle
+                    vm.resetImportState()
                 }
                 is ImportState.Error -> {
                     aiPasteItem?.isEnabled = true
                     Snackbar.make(binding.root, state.message, Snackbar.LENGTH_INDEFINITE)
                         .setAction("OK") { }.show()
-                    vm.importState.value = ImportState.Idle
+                    vm.resetImportState()
                 }
                 else -> aiPasteItem?.isEnabled = true
             }

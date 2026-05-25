@@ -26,29 +26,45 @@ class ClaudeRepository(private val context: Context) {
             val baos = ByteArrayOutputStream()
             bitmap.compress(Bitmap.CompressFormat.JPEG, 85, baos)
             val b64 = Base64.encodeToString(baos.toByteArray(), Base64.NO_WRAP)
-            contentArray.put(JSONObject().apply {
-                put("type", "image")
-                put("source", JSONObject().apply {
-                    put("type", "base64")
-                    put("media_type", "image/jpeg")
-                    put("data", b64)
-                })
-            })
+            contentArray.put(
+                JSONObject().apply {
+                    put("type", "image")
+                    put(
+                        "source",
+                        JSONObject().apply {
+                            put("type", "base64")
+                            put("media_type", "image/jpeg")
+                            put("data", b64)
+                        },
+                    )
+                },
+            )
         }
 
-        contentArray.put(JSONObject().apply {
-            put("type", "text")
-            put("text", text ?: "Extract a checklist from this image.")
-        })
+        contentArray.put(
+            JSONObject().apply {
+                put("type", "text")
+                put("text", text ?: "Extract a checklist from this image.")
+            },
+        )
 
         val body = JSONObject().apply {
             put("model", "claude-haiku-4-5-20251001")
             put("max_tokens", 1024)
-            put("system", "Extract actionable items from the provided content and return them as a JSON array of strings. Return only the JSON array, no other text.")
-            put("messages", JSONArray().put(JSONObject().apply {
-                put("role", "user")
-                put("content", contentArray)
-            }))
+            put(
+                "system",
+                "Extract actionable items from the provided content and return them as a JSON array " +
+                    "of strings. Return only the JSON array, no other text.",
+            )
+            put(
+                "messages",
+                JSONArray().put(
+                    JSONObject().apply {
+                        put("role", "user")
+                        put("content", contentArray)
+                    },
+                ),
+            )
         }
 
         val url = URL("https://api.anthropic.com/v1/messages")
@@ -65,12 +81,13 @@ class ClaudeRepository(private val context: Context) {
         conn.outputStream.use { it.write(body.toString().toByteArray()) }
 
         val responseCode = conn.responseCode
-        val responseText = if (responseCode == 200) {
-            conn.inputStream.bufferedReader().readText()
-        } else {
-            val err = conn.errorStream?.bufferedReader()?.readText() ?: ""
-            throw Exception("API error $responseCode: $err")
-        }
+        val responseText =
+            if (responseCode == 200) {
+                conn.inputStream.bufferedReader().readText()
+            } else {
+                val err = conn.errorStream?.bufferedReader()?.readText() ?: ""
+                throw Exception("API error $responseCode: $err")
+            }
 
         val rawText = JSONObject(responseText)
             .getJSONArray("content")
@@ -78,19 +95,32 @@ class ClaudeRepository(private val context: Context) {
             .getString("text")
             .trim()
 
-        // Strip markdown fences Claude sometimes adds despite the prompt
-        val stripped = rawText
-            .removePrefix("```json").removePrefix("```")
-            .trimStart()
-            .let { s -> if (s.endsWith("```")) s.dropLast(3).trimEnd() else s }
+        parseItems(rawText)
+    }
 
-        // Find the outermost [...] in case there's any surrounding prose
-        val start = stripped.indexOf('[')
-        val end = stripped.lastIndexOf(']')
-        val jsonText = if (start != -1 && end > start) stripped.substring(start, end + 1)
-                       else throw Exception("Unexpected response: $stripped")
+    companion object {
+        /**
+         * Extracts a list of strings from a Claude response that should be a JSON array.
+         * Handles markdown fences and leading prose that Claude adds despite the prompt.
+         */
+        internal fun parseItems(rawText: String): List<String> {
+            val stripped = rawText
+                .removePrefix("```json")
+                .removePrefix("```")
+                .trimStart()
+                .let { s -> if (s.endsWith("```")) s.dropLast(3).trimEnd() else s }
 
-        val arr = JSONArray(jsonText)
-        (0 until arr.length()).map { arr.getString(it) }.filter { it.isNotBlank() }
+            val start = stripped.indexOf('[')
+            val end = stripped.lastIndexOf(']')
+            val jsonText =
+                if (start != -1 && end > start) {
+                    stripped.substring(start, end + 1)
+                } else {
+                    throw Exception("Unexpected response format: $stripped")
+                }
+
+            val arr = JSONArray(jsonText)
+            return (0 until arr.length()).map { arr.getString(it) }.filter { it.isNotBlank() }
+        }
     }
 }

@@ -6,6 +6,8 @@ import android.net.Uri
 import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
+import androidx.lifecycle.ViewModel
+import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.viewModelScope
 import com.noted.data.ClaudeRepository
 import com.noted.data.Item
@@ -26,17 +28,23 @@ sealed class ImportState {
 
 data class PendingShare(val text: String?, val imageUri: Uri?)
 
-class NoteViewModel(app: Application) : AndroidViewModel(app) {
-    private val repo = NoteRepository(NoteDatabase.getDatabase(app).noteDao())
+class NoteViewModel(
+    app: Application,
+    private val repo: NoteRepository,
+) : AndroidViewModel(app) {
 
     val allNotesWithItems: LiveData<List<NoteWithItems>> = repo.allNotesWithItems
 
     private val noteCache = mutableMapOf<Long, LiveData<NoteWithItems>>()
+
+    private val _importState = MutableLiveData<ImportState>(ImportState.Idle)
+    val importState: LiveData<ImportState> = _importState
+
+    private val _pendingShare = MutableLiveData<PendingShare?>()
+    val pendingShare: LiveData<PendingShare?> = _pendingShare
+
     fun getNoteWithItems(id: Long): LiveData<NoteWithItems> =
         noteCache.getOrPut(id) { repo.getNoteWithItems(id) }
-
-    val importState = MutableLiveData<ImportState>(ImportState.Idle)
-    val pendingShare = MutableLiveData<PendingShare?>()
 
     fun createNote(name: String) = viewModelScope.launch { repo.createNote(name) }
 
@@ -60,8 +68,16 @@ class NoteViewModel(app: Application) : AndroidViewModel(app) {
 
     fun deleteItem(item: Item) = viewModelScope.launch { repo.deleteItem(item) }
 
+    fun resetImportState() {
+        _importState.value = ImportState.Idle
+    }
+
+    fun setPendingShare(share: PendingShare?) {
+        _pendingShare.value = share
+    }
+
     fun importFromContent(noteId: Long, text: String?, imageUri: Uri?) {
-        importState.value = ImportState.Loading
+        _importState.value = ImportState.Loading
         viewModelScope.launch {
             try {
                 val bitmap = imageUri?.let { uri ->
@@ -69,15 +85,29 @@ class NoteViewModel(app: Application) : AndroidViewModel(app) {
                         try {
                             getApplication<Application>().contentResolver
                                 .openInputStream(uri)?.use { BitmapFactory.decodeStream(it) }
-                        } catch (e: Exception) { null }
+                        } catch (e: Exception) {
+                            null
+                        }
                     }
                 }
                 val items = ClaudeRepository(getApplication()).generateItems(text, bitmap)
                 repo.addItems(noteId, items)
-                importState.postValue(ImportState.Success(items.size))
+                _importState.postValue(ImportState.Success(items.size))
             } catch (e: Exception) {
-                importState.postValue(ImportState.Error(e.message ?: "Import failed"))
+                _importState.postValue(ImportState.Error(e.message ?: "Import failed"))
             }
         }
+    }
+
+    companion object {
+        fun factory(app: Application): ViewModelProvider.Factory =
+            object : ViewModelProvider.Factory {
+                @Suppress("UNCHECKED_CAST")
+                override fun <T : ViewModel> create(modelClass: Class<T>): T =
+                    NoteViewModel(
+                        app,
+                        NoteRepository(NoteDatabase.getDatabase(app).noteDao()),
+                    ) as T
+            }
     }
 }

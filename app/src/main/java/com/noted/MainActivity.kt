@@ -1,6 +1,7 @@
 package com.noted
 
 import android.content.Intent
+import android.net.Uri
 import android.os.Bundle
 import androidx.activity.viewModels
 import androidx.appcompat.app.AppCompatActivity
@@ -13,7 +14,7 @@ import com.noted.viewmodel.PendingShare
 
 class MainActivity : AppCompatActivity() {
     private lateinit var binding: ActivityMainBinding
-    private val vm: NoteViewModel by viewModels()
+    private val vm: NoteViewModel by viewModels { NoteViewModel.factory(application) }
 
     override fun onCreate(savedInstanceState: Bundle?) {
         AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_YES)
@@ -33,12 +34,11 @@ class MainActivity : AppCompatActivity() {
 
     private fun handleShareIntent(intent: Intent) {
         if (intent.action != Intent.ACTION_SEND) return
-
         val text = intent.getStringExtra(Intent.EXTRA_TEXT)
-        val imageUri = intent.getParcelableExtra<android.net.Uri>(Intent.EXTRA_STREAM)
-
+        @Suppress("DEPRECATION")
+        val imageUri = intent.getParcelableExtra<Uri>(Intent.EXTRA_STREAM)
         if (text != null || imageUri != null) {
-            vm.pendingShare.value = PendingShare(text, imageUri)
+            vm.setPendingShare(PendingShare(text, imageUri))
         }
     }
 

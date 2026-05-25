@@ -19,7 +19,7 @@ import kotlinx.coroutines.launch
 class HomeFragment : Fragment() {
     private var _binding: FragmentHomeBinding? = null
     private val binding get() = _binding!!
-    private val vm: NoteViewModel by activityViewModels()
+    private val vm: NoteViewModel by activityViewModels { NoteViewModel.factory(requireActivity().application) }
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View {
         _binding = FragmentHomeBinding.inflate(inflater, container, false)
@@ -52,7 +52,7 @@ class HomeFragment : Fragment() {
 
         vm.pendingShare.observe(viewLifecycleOwner) { share ->
             if (share == null) return@observe
-            vm.pendingShare.value = null
+            vm.setPendingShare(null)
 
             viewLifecycleOwner.lifecycleScope.launch {
                 val noteId = vm.createAndGetNoteId("New list")
