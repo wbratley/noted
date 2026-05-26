@@ -6,7 +6,6 @@ import org.junit.Assert.assertThrows
 import org.junit.Test
 
 class ClaudeParserTest {
-
     private fun parse(raw: String) = ClaudeRepository.parseItems(raw)
 
     @Test
