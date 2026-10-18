@@ -3,13 +3,13 @@ package com.noted.data
 import android.content.Context
 import android.graphics.Bitmap
 import android.util.Base64
+import java.io.ByteArrayOutputStream
+import java.net.HttpURLConnection
+import java.net.URL
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
 import org.json.JSONArray
 import org.json.JSONObject
-import java.io.ByteArrayOutputStream
-import java.net.HttpURLConnection
-import java.net.URL
 
 class ClaudeRepository(private val context: Context) {
 
@@ -35,9 +35,9 @@ class ClaudeRepository(private val context: Context) {
                             put("type", "base64")
                             put("media_type", "image/jpeg")
                             put("data", b64)
-                        },
+                        }
                     )
-                },
+                }
             )
         }
 
@@ -45,7 +45,7 @@ class ClaudeRepository(private val context: Context) {
             JSONObject().apply {
                 put("type", "text")
                 put("text", text ?: "Extract a checklist from this image.")
-            },
+            }
         )
 
         val body = JSONObject().apply {
@@ -54,7 +54,7 @@ class ClaudeRepository(private val context: Context) {
             put(
                 "system",
                 "Extract actionable items from the provided content and return them as a JSON array " +
-                    "of strings. Return only the JSON array, no other text.",
+                    "of strings. Return only the JSON array, no other text."
             )
             put(
                 "messages",
@@ -62,8 +62,8 @@ class ClaudeRepository(private val context: Context) {
                     JSONObject().apply {
                         put("role", "user")
                         put("content", contentArray)
-                    },
-                ),
+                    }
+                )
             )
         }
 

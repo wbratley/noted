@@ -7,12 +7,14 @@ import androidx.room.PrimaryKey
 
 @Entity(
     tableName = "items",
-    foreignKeys = [ForeignKey(
-        entity = Note::class,
-        parentColumns = ["id"],
-        childColumns = ["noteId"],
-        onDelete = ForeignKey.CASCADE
-    )],
+    foreignKeys = [
+        ForeignKey(
+            entity = Note::class,
+            parentColumns = ["id"],
+            childColumns = ["noteId"],
+            onDelete = ForeignKey.CASCADE
+        )
+    ],
     indices = [Index("noteId")]
 )
 data class Item(

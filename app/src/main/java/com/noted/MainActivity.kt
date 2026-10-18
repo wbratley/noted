@@ -35,6 +35,7 @@ class MainActivity : AppCompatActivity() {
     private fun handleShareIntent(intent: Intent) {
         if (intent.action != Intent.ACTION_SEND) return
         val text = intent.getStringExtra(Intent.EXTRA_TEXT)
+
         @Suppress("DEPRECATION")
         val imageUri = intent.getParcelableExtra<Uri>(Intent.EXTRA_STREAM)
         if (text != null || imageUri != null) {

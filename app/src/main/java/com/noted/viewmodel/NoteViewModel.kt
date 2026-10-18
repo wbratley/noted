@@ -32,7 +32,7 @@ data class PendingShare(val text: String?, val imageUri: Uri?)
 
 class NoteViewModel(
     app: Application,
-    private val repo: NoteRepository,
+    private val repo: NoteRepository
 ) : AndroidViewModel(app) {
 
     val allNotesWithItems: LiveData<List<NoteWithItems>> = repo.allNotesWithItems
@@ -45,8 +45,7 @@ class NoteViewModel(
     private val _pendingShare = MutableLiveData<PendingShare?>()
     val pendingShare: LiveData<PendingShare?> = _pendingShare
 
-    fun getNoteWithItems(id: Long): LiveData<NoteWithItems> =
-        noteCache.getOrPut(id) { repo.getNoteWithItems(id) }
+    fun getNoteWithItems(id: Long): LiveData<NoteWithItems> = noteCache.getOrPut(id) { repo.getNoteWithItems(id) }
 
     fun createNote(name: String) = viewModelScope.launch { repo.createNote(name) }
 
@@ -123,14 +122,12 @@ class NoteViewModel(
     companion object {
         const val NEW_LIST_NAME = "New list"
 
-        fun factory(app: Application): ViewModelProvider.Factory =
-            object : ViewModelProvider.Factory {
-                @Suppress("UNCHECKED_CAST")
-                override fun <T : ViewModel> create(modelClass: Class<T>): T =
-                    NoteViewModel(
-                        app,
-                        NoteRepository(NoteDatabase.getDatabase(app).noteDao()),
-                    ) as T
-            }
+        fun factory(app: Application): ViewModelProvider.Factory = object : ViewModelProvider.Factory {
+            @Suppress("UNCHECKED_CAST")
+            override fun <T : ViewModel> create(modelClass: Class<T>): T = NoteViewModel(
+                app,
+                NoteRepository(NoteDatabase.getDatabase(app).noteDao())
+            ) as T
+        }
     }
 }
