@@ -55,5 +55,5 @@ object ListParser {
     }
 
     /** Strips invisible characters that often sneak in from copy & paste. */
-    private fun clean(line: String): String = line.replace('\u2060', '').replace('\u200B', '').replace('\uFEFF', '')
+    private fun clean(line: String): String = line.replace("\u2060", "").replace("\u200B", "").replace("\uFEFF", "")
 }
