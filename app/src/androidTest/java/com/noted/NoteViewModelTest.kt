@@ -4,10 +4,8 @@ import android.app.Application
 import androidx.arch.core.executor.testing.InstantTaskExecutorRule
 import androidx.test.core.app.ApplicationProvider
 import androidx.test.ext.junit.runners.AndroidJUnit4
-import com.noted.data.Item
 import com.noted.data.Note
 import com.noted.data.NoteRepository
-import com.noted.data.NoteWithItems
 import com.noted.viewmodel.ImportState
 import com.noted.viewmodel.NoteViewModel
 import com.noted.viewmodel.PendingShare
@@ -24,7 +22,6 @@ import org.junit.runner.RunWith
 @ExperimentalCoroutinesApi
 @RunWith(AndroidJUnit4::class)
 class NoteViewModelTest {
-
     @get:Rule
     val instantTaskRule = InstantTaskExecutorRule()
 
