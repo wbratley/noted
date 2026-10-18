@@ -22,13 +22,12 @@ abstract class NoteDatabase : RoomDatabase() {
 
     companion object {
         @Volatile
-        private var INSTANCE: NoteDatabase? = null
+        private var instance: NoteDatabase? = null
 
-        fun getDatabase(context: Context): NoteDatabase =
-            INSTANCE ?: synchronized(this) {
-                Room.databaseBuilder(context, NoteDatabase::class.java, "noted_database")
-                    .build()
-                    .also { INSTANCE = it }
-            }
+        fun getDatabase(context: Context): NoteDatabase = instance ?: synchronized(this) {
+            Room.databaseBuilder(context, NoteDatabase::class.java, "noted_database")
+                .build()
+                .also { instance = it }
+        }
     }
 }

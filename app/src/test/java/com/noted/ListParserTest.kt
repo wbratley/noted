@@ -14,7 +14,7 @@ class ListParserTest {
                 "Butlins packing\n" +
                     "◦Tablet boxes\n" +
                     "◦Fan\n" +
-                    "◦Dressings",
+                    "◦Dressings"
             )
         assertEquals(ParsedList("Butlins packing", listOf("Tablet boxes", "Fan", "Dressings")), parsed)
     }
@@ -139,7 +139,7 @@ class ListParserTest {
                 "◦Bag for dirty laundry/wet clothes?",
                 "◦Booking info",
                 "• mikey calm me down box",
-                "• \u2060calming cube",
+                "• \u2060calming cube"
             )
 
         val parsed = ListParser.parse(lines.joinToString("\n"))

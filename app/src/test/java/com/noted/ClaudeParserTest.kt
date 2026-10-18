@@ -37,7 +37,7 @@ class ClaudeParserTest {
     fun filtersBlankEntries() {
         assertEquals(
             listOf("valid", "also valid"),
-            parse("""["valid", "", "  ", "also valid"]"""),
+            parse("""["valid", "", "  ", "also valid"]""")
         )
     }
 

@@ -40,71 +40,65 @@ class NoteDaoTest {
     fun closeDb() = db.close()
 
     @Test
-    fun insertNoteAndRetrieve() =
-        runBlocking {
-            val id = dao.insertNote(Note(name = "Groceries"))
-            val result = dao.getAllNotesWithItems().getOrAwaitValue()
-            assertEquals(1, result.size)
-            assertEquals("Groceries", result[0].note.name)
-            assertEquals(id, result[0].note.id)
-        }
+    fun insertNoteAndRetrieve() = runBlocking {
+        val id = dao.insertNote(Note(name = "Groceries"))
+        val result = dao.getAllNotesWithItems().getOrAwaitValue()
+        assertEquals(1, result.size)
+        assertEquals("Groceries", result[0].note.name)
+        assertEquals(id, result[0].note.id)
+    }
 
     @Test
-    fun insertItemsAndRetrieveWithNote() =
-        runBlocking {
-            val noteId = dao.insertNote(Note(name = "Todo"))
-            dao.insertItem(Item(noteId = noteId, text = "first"))
-            dao.insertItem(Item(noteId = noteId, text = "second"))
-            val result = dao.getNoteWithItems(noteId).getOrAwaitValue()
-            assertEquals(2, result.items.size)
-        }
+    fun insertItemsAndRetrieveWithNote() = runBlocking {
+        val noteId = dao.insertNote(Note(name = "Todo"))
+        dao.insertItem(Item(noteId = noteId, text = "first"))
+        dao.insertItem(Item(noteId = noteId, text = "second"))
+        val result = dao.getNoteWithItems(noteId).getOrAwaitValue()
+        assertEquals(2, result.items.size)
+    }
 
     @Test
-    fun deleteTickedItemsLeavesUnticked() =
-        runBlocking {
-            val noteId = dao.insertNote(Note(name = "Mixed"))
-            dao.insertItem(Item(noteId = noteId, text = "done", ticked = true))
-            dao.insertItem(Item(noteId = noteId, text = "todo", ticked = false))
-            dao.deleteTickedItems(noteId)
-            val result = dao.getNoteWithItems(noteId).getOrAwaitValue()
-            assertEquals(1, result.items.size)
-            assertEquals("todo", result.items[0].text)
-        }
+    fun deleteTickedItemsLeavesUnticked() = runBlocking {
+        val noteId = dao.insertNote(Note(name = "Mixed"))
+        dao.insertItem(Item(noteId = noteId, text = "done", ticked = true))
+        dao.insertItem(Item(noteId = noteId, text = "todo", ticked = false))
+        dao.deleteTickedItems(noteId)
+        val result = dao.getNoteWithItems(noteId).getOrAwaitValue()
+        assertEquals(1, result.items.size)
+        assertEquals("todo", result.items[0].text)
+    }
 
     @Test
-    fun deleteTickedItemsWhenNoneLeavesAll() =
-        runBlocking {
-            val noteId = dao.insertNote(Note(name = "All unticked"))
-            dao.insertItem(Item(noteId = noteId, text = "a"))
-            dao.insertItem(Item(noteId = noteId, text = "b"))
-            dao.deleteTickedItems(noteId)
-            val result = dao.getNoteWithItems(noteId).getOrAwaitValue()
-            assertEquals(2, result.items.size)
-        }
+    fun deleteTickedItemsWhenNoneLeavesAll() = runBlocking {
+        val noteId = dao.insertNote(Note(name = "All unticked"))
+        dao.insertItem(Item(noteId = noteId, text = "a"))
+        dao.insertItem(Item(noteId = noteId, text = "b"))
+        dao.deleteTickedItems(noteId)
+        val result = dao.getNoteWithItems(noteId).getOrAwaitValue()
+        assertEquals(2, result.items.size)
+    }
 
     @Test
-    fun deleteNoteCascadesItems() =
-        runBlocking {
-            val noteId = dao.insertNote(Note(name = "To delete"))
-            dao.insertItem(Item(noteId = noteId, text = "orphan"))
-            val note = dao.getNoteWithItems(noteId).getOrAwaitValue().note
-            dao.deleteNote(note)
-            val all = dao.getAllNotesWithItems().getOrAwaitValue()
-            assertTrue(all.isEmpty())
-        }
+    fun deleteNoteCascadesItems() = runBlocking {
+        val noteId = dao.insertNote(Note(name = "To delete"))
+        dao.insertItem(Item(noteId = noteId, text = "orphan"))
+        val note = dao.getNoteWithItems(noteId).getOrAwaitValue().note
+        dao.deleteNote(note)
+        val all = dao.getAllNotesWithItems().getOrAwaitValue()
+        assertTrue(all.isEmpty())
+    }
 
     @Test
-    fun insertItemsBulk() =
-        runBlocking {
-            val noteId = dao.insertNote(Note(name = "Bulk"))
-            dao.insertItems(
-                listOf(
-                    Item(noteId = noteId, text = "one"),
-                    Item(noteId = noteId, text = "two"),
-                    Item(noteId = noteId, text = "three"),
-                ),
+    fun insertItemsBulk() = runBlocking {
+        val noteId = dao.insertNote(Note(name = "Bulk"))
+        dao.insertItems(
+            listOf(
+                Item(noteId = noteId, text = "one"),
+                Item(noteId = noteId, text = "two"),
+                Item(noteId = noteId, text = "three")
             )
-            val result = dao.getNoteWithItems(noteId).getOrAwaitValue()
-            assertEquals(3, result.items.size)
-        }
+        )
+        val result = dao.getNoteWithItems(noteId).getOrAwaitValue()
+        assertEquals(3, result.items.size)
+    }
 }

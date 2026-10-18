@@ -76,7 +76,9 @@ class ChecklistFragment : Fragment() {
             if (actionId == EditorInfo.IME_ACTION_DONE) {
                 binding.noteTitle.clearFocus()
                 true
-            } else false
+            } else {
+                false
+            }
         }
 
         binding.noteTitle.setOnFocusChangeListener { _, hasFocus ->
@@ -84,14 +86,23 @@ class ChecklistFragment : Fragment() {
         }
 
         binding.addItemInput.setOnEditorActionListener { _, actionId, _ ->
-            if (actionId == EditorInfo.IME_ACTION_DONE) { addItem(); true } else false
+            if (actionId == EditorInfo.IME_ACTION_DONE) {
+                addItem()
+                true
+            } else {
+                false
+            }
         }
 
         binding.addItemInput.setOnKeyListener { _, keyCode, event ->
             if (event.action == KeyEvent.ACTION_DOWN &&
-                (keyCode == KeyEvent.KEYCODE_ENTER || keyCode == KeyEvent.KEYCODE_TAB)) {
-                addItem(); true
-            } else false
+                (keyCode == KeyEvent.KEYCODE_ENTER || keyCode == KeyEvent.KEYCODE_TAB)
+            ) {
+                addItem()
+                true
+            } else {
+                false
+            }
         }
 
         binding.addItemInput.postDelayed({
@@ -108,8 +119,14 @@ class ChecklistFragment : Fragment() {
 
     override fun onOptionsItemSelected(item: MenuItem): Boolean {
         return when (item.itemId) {
-            R.id.action_ai_paste -> { triggerAiPaste(); true }
-            R.id.action_delete_ticked -> { deleteTicked(); true }
+            R.id.action_ai_paste -> {
+                triggerAiPaste()
+                true
+            }
+            R.id.action_delete_ticked -> {
+                deleteTicked()
+                true
+            }
             R.id.action_settings -> {
                 findNavController().navigate(ChecklistFragmentDirections.actionChecklistToSettings())
                 true
@@ -143,7 +160,8 @@ class ChecklistFragment : Fragment() {
         // Image in clipboard — pass URI to ViewModel for decoding
         if (description.hasMimeType("image/*") ||
             description.hasMimeType("image/jpeg") ||
-            description.hasMimeType("image/png")) {
+            description.hasMimeType("image/png")
+        ) {
             val uri = clipItem.uri
             if (uri != null) {
                 vm.importFromContent(args.noteId, null, uri)
