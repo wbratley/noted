@@ -13,7 +13,7 @@ Distributed via **GitHub Actions → GitHub Releases → [Obtainium](https://git
 - **Enter** key adds the next item without touching a button
 - Checked items sink to the bottom; clear them all with the bin icon
 - Swipe left/right on a list to delete it
-- **AI from clipboard** — paste any text or screenshot, Claude extracts a checklist from it (opt-in, requires your own Anthropic API key)
+- **Paste from clipboard** — paste a list (bullets or numbers) and it's imported locally, instantly, no setup; paste prose or a screenshot and Claude extracts a checklist (opt-in, requires your own Anthropic API key)
 - Share text or images from any app directly into Noted
 
 ---
@@ -76,18 +76,21 @@ Every push to `main` runs two jobs:
 
 ---
 
-## Claude AI feature
+## Paste from clipboard
 
-The **AI from clipboard** feature is **disabled by default** — no network calls are made unless you opt in.
+The **✦ paste** icon in the checklist toolbar imports whatever is in your clipboard:
 
-To enable it:
+- **List text** — lines with bullets (`•`, `◦`, …) or numbers (`1.`, `2)`) are parsed **locally: no account, no network, instant**. A heading line before the bullets (e.g. `Butlins packing`) becomes the list name for a new list.
+- **Prose or a screenshot** is sent to Claude to extract a checklist. This path is **disabled by default** — no network calls are made unless you opt in.
+
+To enable the Claude fallback:
 
 1. Open any list → tap the **⚙ gear** icon → **Settings**
 2. Toggle **Enable Claude AI** on
 3. Paste your [Anthropic API key](https://console.anthropic.com/) (`sk-ant-...`)
 4. Tap **Save**
 
-Once enabled, the **✦ sparkle** icon appears in the checklist toolbar. Copy any text or screenshot to your clipboard, tap the icon, and Claude will extract a list of actionable items.
+The **✦ paste** icon is always present in the checklist toolbar. Copy text or a screenshot to your clipboard and tap the icon — lists import locally, anything else goes to Claude.
 
 The app also registers as a **Share** target — share text or an image from any other app directly into Noted to create a new list.
 
@@ -106,9 +109,10 @@ app/
     NoteRepository.kt          — single data source for the ViewModel
     ApiKeyStore.kt             — EncryptedSharedPreferences wrapper
     ClaudeRepository.kt        — Claude Messages API client
+    ListParser.kt              — local parser for bullet/numbered list pastes
   ui/
     home/                      — list of notes, FAB, swipe-to-delete
-    checklist/                 — item list, inline title editing, AI paste
+    checklist/                 — item list, inline title editing, paste from clipboard
     settings/                  — API key + enable toggle
   viewmodel/
     NoteViewModel.kt           — shared AndroidViewModel, factory in companion
@@ -126,6 +130,7 @@ app/
 | Layer | File | Type |
 |-------|------|------|
 | JSON parsing | `ClaudeParserTest` | JVM unit test |
+| List parsing | `ListParserTest` | JVM unit test |
 | Room DAO | `NoteDaoTest` | Instrumented (in-memory DB) |
 | ViewModel | `NoteViewModelTest` | Instrumented (MockK) |
 

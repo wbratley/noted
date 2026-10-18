@@ -5,7 +5,7 @@
     <item
         android:id="@+id/action_ai_paste"
         android:icon="@drawable/ic_sparkle"
-        android:title="AI from clipboard"
+        android:title="Paste from clipboard"
         app:showAsAction="always" />
     <item
         android:id="@+id/action_delete_ticked"

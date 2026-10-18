@@ -14,7 +14,6 @@ import androidx.navigation.fragment.navArgs
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.google.android.material.snackbar.Snackbar
 import com.noted.R
-import com.noted.data.ApiKeyStore
 import com.noted.databinding.FragmentChecklistBinding
 import com.noted.viewmodel.ImportState
 import com.noted.viewmodel.NoteViewModel
@@ -107,10 +106,6 @@ class ChecklistFragment : Fragment() {
         aiPasteItem = menu.findItem(R.id.action_ai_paste)
     }
 
-    override fun onPrepareOptionsMenu(menu: Menu) {
-        menu.findItem(R.id.action_ai_paste)?.isVisible = ApiKeyStore(requireContext()).isEnabled()
-    }
-
     override fun onOptionsItemSelected(item: MenuItem): Boolean {
         return when (item.itemId) {
             R.id.action_ai_paste -> { triggerAiPaste(); true }
@@ -170,7 +165,7 @@ class ChecklistFragment : Fragment() {
         if (text.isEmpty()) return
 
         val nwi = vm.getNoteWithItems(args.noteId).value
-        if (nwi != null && nwi.items.isEmpty() && nwi.note.name == "New list") {
+        if (nwi != null && nwi.items.isEmpty() && nwi.note.name == NoteViewModel.NEW_LIST_NAME) {
             vm.renameNote(nwi.note, text)
         }
 
