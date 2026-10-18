@@ -1,6 +1,7 @@
 package com.noted.viewmodel
 
 import android.app.Application
+import android.graphics.Bitmap
 import android.graphics.BitmapFactory
 import android.net.Uri
 import androidx.lifecycle.AndroidViewModel
@@ -11,6 +12,7 @@ import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.viewModelScope
 import com.noted.data.ClaudeRepository
 import com.noted.data.Item
+import com.noted.data.ListParser
 import com.noted.data.Note
 import com.noted.data.NoteDatabase
 import com.noted.data.NoteRepository
@@ -80,17 +82,16 @@ class NoteViewModel(
         _importState.value = ImportState.Loading
         viewModelScope.launch {
             try {
-                val bitmap = imageUri?.let { uri ->
-                    withContext(Dispatchers.IO) {
-                        try {
-                            getApplication<Application>().contentResolver
-                                .openInputStream(uri)?.use { BitmapFactory.decodeStream(it) }
-                        } catch (e: Exception) {
-                            null
-                        }
+                // Text that is already a list parses locally — no network, works without Claude.
+                val local = if (text != null && imageUri == null) ListParser.parse(text) else null
+                val items =
+                    if (local != null) {
+                        local.items
+                    } else {
+                        val bitmap = decodeImage(imageUri)
+                        ClaudeRepository(getApplication()).generateItems(text, bitmap)
                     }
-                }
-                val items = ClaudeRepository(getApplication()).generateItems(text, bitmap)
+                renameIfNewList(noteId, local?.title)
                 repo.addItems(noteId, items)
                 _importState.postValue(ImportState.Success(items.size))
             } catch (e: Exception) {
@@ -99,7 +100,29 @@ class NoteViewModel(
         }
     }
 
+    /** A heading pasted before the bullets becomes the name of a brand-new list. */
+    private suspend fun renameIfNewList(noteId: Long, title: String?) {
+        if (title == null) return
+        val note = repo.getNoteWithItems(noteId).value?.note
+        if (note != null && note.name == NEW_LIST_NAME) {
+            repo.updateNote(note.copy(name = title))
+        }
+    }
+
+    private suspend fun decodeImage(uri: Uri?): Bitmap? = uri?.let { u ->
+        withContext(Dispatchers.IO) {
+            try {
+                getApplication<Application>().contentResolver
+                    .openInputStream(u)?.use { BitmapFactory.decodeStream(it) }
+            } catch (e: Exception) {
+                null
+            }
+        }
+    }
+
     companion object {
+        const val NEW_LIST_NAME = "New list"
+
         fun factory(app: Application): ViewModelProvider.Factory =
             object : ViewModelProvider.Factory {
                 @Suppress("UNCHECKED_CAST")
