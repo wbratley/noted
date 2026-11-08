@@ -10,7 +10,7 @@ import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.viewModelScope
-import com.noted.data.ClaudeRepository
+import com.noted.data.AiRepository
 import com.noted.data.Item
 import com.noted.data.ListParser
 import com.noted.data.Note
@@ -81,14 +81,14 @@ class NoteViewModel(
         _importState.value = ImportState.Loading
         viewModelScope.launch {
             try {
-                // Text that is already a list parses locally — no network, works without Claude.
+                // Text that is already a list parses locally — no network, works without AI.
                 val local = if (text != null && imageUri == null) ListParser.parse(text) else null
                 val items =
                     if (local != null) {
                         local.items
                     } else {
                         val bitmap = decodeImage(imageUri)
-                        ClaudeRepository(getApplication()).generateItems(text, bitmap)
+                        AiRepository(getApplication()).generateItems(text, bitmap)
                     }
                 renameIfNewList(noteId, local?.title)
                 repo.addItems(noteId, items)
