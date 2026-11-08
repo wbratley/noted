@@ -1,12 +1,12 @@
 package com.noted
 
-import com.noted.data.ClaudeRepository
+import com.noted.data.AiRepository
 import org.junit.Assert.assertEquals
 import org.junit.Assert.assertThrows
 import org.junit.Test
 
-class ClaudeParserTest {
-    private fun parse(raw: String) = ClaudeRepository.parseItems(raw)
+class AiParserTest {
+    private fun parse(raw: String) = AiRepository.parseItems(raw)
 
     @Test
     fun plainJsonArray() {

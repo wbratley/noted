@@ -13,7 +13,7 @@ Distributed via **GitHub Actions → GitHub Releases → [Obtainium](https://git
 - **Enter** key adds the next item without touching a button
 - Checked items sink to the bottom; clear them all with the bin icon
 - Swipe left/right on a list to delete it
-- **Paste from clipboard** — paste a list (bullets or numbers) and it's imported locally, instantly, no setup; paste prose or a screenshot and Claude extracts a checklist (opt-in, requires your own Anthropic API key)
+- **Paste from clipboard** — paste a list (bullets or numbers) and it's imported locally, instantly, no setup; paste prose or a screenshot and AI extracts a checklist (opt-in, requires your own Anthropic or DeepSeek API key)
 - Share text or images from any app directly into Noted
 
 ---
@@ -81,20 +81,22 @@ Every push to `main` runs two jobs:
 The **✦ paste** icon in the checklist toolbar imports whatever is in your clipboard:
 
 - **List text** — lines with bullets (`•`, `◦`, …) or numbers (`1.`, `2)`) are parsed **locally: no account, no network, instant**. A heading line before the bullets (e.g. `Butlins packing`) becomes the list name for a new list.
-- **Prose or a screenshot** is sent to Claude to extract a checklist. This path is **disabled by default** — no network calls are made unless you opt in.
+- **Prose or a screenshot** is sent to the AI provider to extract a checklist. This path is **disabled by default** — no network calls are made unless you opt in.
 
-To enable the Claude fallback:
+To enable the AI fallback:
 
 1. Open any list → tap the **⚙ gear** icon → **Settings**
-2. Toggle **Enable Claude AI** on
-3. Paste your [Anthropic API key](https://console.anthropic.com/) (`sk-ant-...`)
+2. Toggle **Enable AI** on
+3. Pick a provider and paste the key:
+   - **Anthropic** ([console.anthropic.com](https://console.anthropic.com/), `sk-ant-...`) — handles both prose and screenshots
+   - **DeepSeek** ([platform.deepseek.com](https://platform.deepseek.com/), `sk-...`) — text-only; screenshot extraction still needs Anthropic
 4. Tap **Save**
 
-The **✦ paste** icon is always present in the checklist toolbar. Copy text or a screenshot to your clipboard and tap the icon — lists import locally, anything else goes to Claude.
+The **✦ paste** icon is always present in the checklist toolbar. Copy text or a screenshot to your clipboard and tap the icon — lists import locally, anything else goes to the AI provider.
 
 The app also registers as a **Share** target — share text or an image from any other app directly into Noted to create a new list.
 
-The API key is stored encrypted on-device using `EncryptedSharedPreferences`. It never leaves your device except in the direct API call to `api.anthropic.com`.
+The API key is stored encrypted on-device using `EncryptedSharedPreferences`. It never leaves your device except in the direct API call to the chosen provider (`api.anthropic.com` or `api.deepseek.com`).
 
 ---
 
@@ -108,12 +110,12 @@ app/
     NoteDatabase.kt            — Room singleton
     NoteRepository.kt          — single data source for the ViewModel
     ApiKeyStore.kt             — EncryptedSharedPreferences wrapper
-    ClaudeRepository.kt        — Claude Messages API client
+    AiRepository.kt            — Anthropic Messages / DeepSeek Chat Completions client
     ListParser.kt              — local parser for bullet/numbered list pastes
   ui/
     home/                      — list of notes, FAB, swipe-to-delete
     checklist/                 — item list, inline title editing, paste from clipboard
-    settings/                  — API key + enable toggle
+    settings/                  — API key + enable toggle + provider choice
   viewmodel/
     NoteViewModel.kt           — shared AndroidViewModel, factory in companion
   MainActivity.kt              — toolbar, NavController, share intent handling
@@ -129,7 +131,7 @@ app/
 
 | Layer | File | Type |
 |-------|------|------|
-| JSON parsing | `ClaudeParserTest` | JVM unit test |
+| JSON parsing | `AiParserTest` | JVM unit test |
 | List parsing | `ListParserTest` | JVM unit test |
 | Room DAO | `NoteDaoTest` | Instrumented (in-memory DB) |
 | ViewModel | `NoteViewModelTest` | Instrumented (MockK) |

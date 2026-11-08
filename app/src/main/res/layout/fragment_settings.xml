@@ -8,10 +8,10 @@
     android:padding="24dp">
 
     <com.google.android.material.switchmaterial.SwitchMaterial
-        android:id="@+id/claude_enabled_switch"
+        android:id="@+id/ai_enabled_switch"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:text="Enable Claude AI"
+        android:text="Enable AI"
         android:textColor="@color/title_blue"
         android:textSize="16sp"
         android:layout_marginBottom="28dp" />
@@ -19,10 +19,48 @@
     <TextView
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:text="Anthropic API key"
+        android:text="Provider"
         android:textColor="@color/title_blue"
         android:textSize="13sp"
         android:letterSpacing="0.06"
+        android:layout_marginBottom="8dp" />
+
+    <RadioGroup
+        android:id="@+id/provider_group"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical">
+
+        <RadioButton
+            android:id="@+id/provider_anthropic"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="Anthropic (Claude) — text &amp; screenshots"
+            android:textColor="@color/title_blue"
+            android:buttonTint="@color/electric_blue"
+            android:textSize="16sp"
+            android:paddingBottom="8dp" />
+
+        <RadioButton
+            android:id="@+id/provider_deepseek"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="DeepSeek — text only"
+            android:textColor="@color/title_blue"
+            android:buttonTint="@color/electric_blue"
+            android:textSize="16sp"
+            android:paddingBottom="8dp" />
+
+    </RadioGroup>
+
+    <TextView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="API key"
+        android:textColor="@color/title_blue"
+        android:textSize="13sp"
+        android:letterSpacing="0.06"
+        android:layout_marginTop="20dp"
         android:layout_marginBottom="8dp" />
 
     <EditText
