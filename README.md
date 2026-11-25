@@ -12,6 +12,7 @@ Distributed via **GitHub Actions → GitHub Releases → [Obtainium](https://git
 - First item you type auto-names the list
 - **Enter** key adds the next item without touching a button
 - Checked items sink to the bottom; clear them all with the bin icon
+- Scroll past unchecked items and a **↑ count** pill floats at the top of the list — tap it to jump back to the first unchecked item
 - Swipe left/right on a list to delete it
 - **Paste from clipboard** — paste a list (bullets or numbers) and it's imported locally, instantly, no setup; paste prose or a screenshot and AI extracts a checklist (opt-in, requires your own Anthropic or DeepSeek API key)
 - Share text or images from any app directly into Noted

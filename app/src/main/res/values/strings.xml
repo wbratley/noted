@@ -12,4 +12,5 @@
     <string name="api_key_label">API key</string>
     <string name="no_clipboard">Nothing useful in clipboard</string>
     <string name="no_api_key">No API key — add one in Settings</string>
+    <string name="scroll_to_unchecked">Scroll to unchecked items</string>
 </resources>
