@@ -12,8 +12,10 @@ import androidx.fragment.app.activityViewModels
 import androidx.navigation.fragment.findNavController
 import androidx.navigation.fragment.navArgs
 import androidx.recyclerview.widget.LinearLayoutManager
+import androidx.recyclerview.widget.RecyclerView
 import com.google.android.material.snackbar.Snackbar
 import com.noted.R
+import com.noted.data.Item
 import com.noted.databinding.FragmentChecklistBinding
 import com.noted.viewmodel.ImportState
 import com.noted.viewmodel.NoteViewModel
@@ -24,6 +26,9 @@ class ChecklistFragment : Fragment() {
     private val vm: NoteViewModel by activityViewModels { NoteViewModel.factory(requireActivity().application) }
     private val args: ChecklistFragmentArgs by navArgs()
     private var aiPasteItem: MenuItem? = null
+    private var items: List<Item> = emptyList()
+    private var uncheckedCount = 0
+    private var missedIndicatorVisible = false
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View {
         _binding = FragmentChecklistBinding.inflate(inflater, container, false)
@@ -46,12 +51,27 @@ class ChecklistFragment : Fragment() {
         binding.recyclerView.layoutManager = LinearLayoutManager(requireContext())
         binding.recyclerView.adapter = adapter
 
+        binding.missedIndicator.setOnClickListener {
+            val first = items.indexOfFirst { !it.ticked }
+            if (first >= 0) binding.recyclerView.scrollToPosition(first)
+        }
+
+        binding.recyclerView.addOnScrollListener(object : RecyclerView.OnScrollListener() {
+            override fun onScrolled(recyclerView: RecyclerView, dx: Int, dy: Int) {
+                updateMissedIndicator()
+            }
+        })
+
         vm.getNoteWithItems(args.noteId).observe(viewLifecycleOwner) { nwi ->
             requireActivity().title = nwi.note.name
             if (!binding.noteTitle.isFocused) {
                 binding.noteTitle.setText(nwi.note.name)
             }
-            adapter.submitList(nwi.items.sortedWith(compareBy({ it.ticked }, { it.id })))
+            val sorted = nwi.items.sortedWith(compareBy({ it.ticked }, { it.id }))
+            items = sorted
+            uncheckedCount = sorted.count { !it.ticked }
+            adapter.submitList(sorted)
+            updateMissedIndicator()
         }
 
         vm.importState.observe(viewLifecycleOwner) { state ->
@@ -132,6 +152,41 @@ class ChecklistFragment : Fragment() {
                 true
             }
             else -> super.onOptionsItemSelected(item)
+        }
+    }
+
+    /**
+     * Shows the "missed items" pill while unchecked rows are scrolled out of view
+     * above, so items at the top of the list don't get lost.
+     */
+    private fun updateMissedIndicator() {
+        val first = (binding.recyclerView.layoutManager as? LinearLayoutManager)
+            ?.findFirstVisibleItemPosition() ?: return
+        if (first == RecyclerView.NO_POSITION) return
+
+        // Items are sorted unchecked-first, so the unchecked rows above the first
+        // visible one number min(first, uncheckedCount).
+        val missed = minOf(first, uncheckedCount)
+
+        if (missed > 0) {
+            binding.missedCount.text = missed.toString()
+            if (!missedIndicatorVisible) {
+                missedIndicatorVisible = true
+                binding.missedIndicator.alpha = 0f
+                binding.missedIndicator.visibility = View.VISIBLE
+                binding.missedIndicator.animate().alpha(1f).setDuration(150).start()
+            }
+        } else if (missedIndicatorVisible) {
+            missedIndicatorVisible = false
+            binding.missedIndicator.animate()
+                .alpha(0f)
+                .setDuration(120)
+                .withEndAction {
+                    if (!missedIndicatorVisible) {
+                        binding.missedIndicator.visibility = View.GONE
+                    }
+                }
+                .start()
         }
     }
 
